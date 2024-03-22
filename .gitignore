@@ -1,0 +1,5 @@
+.venv/
+.venv_win/
+
+tests/artifacts/
+tests/exit
