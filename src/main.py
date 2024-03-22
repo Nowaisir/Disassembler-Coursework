@@ -19,32 +19,14 @@ def findInstructionsRange(fileBytes):
     SEGMENT_HEADER_TABLE = 0x40
     SEGMENT_HEADER_SIZE = 0x38
 
-    print("actual segment head")
-
     numSegments = int.from_bytes(fileBytes[0x38:0x3A], "little")
-    print("# segments:", numSegments)
 
     instructions_segment = None
 
     for header in range(
         SEGMENT_HEADER_TABLE, SEGMENT_HEADER_TABLE + numSegments * SEGMENT_HEADER_SIZE, SEGMENT_HEADER_SIZE
     ):
-
-        print(header)
-
         segmentFlags = int.from_bytes(fileBytes[header + 4 : header + 8], "little")
-        flagsText = ""
-
-        if segmentFlags & 4 == 4:
-            flagsText += "R"
-
-        if segmentFlags & 2 == 2:
-            flagsText += "W"
-
-        if segmentFlags & 1 == 1:
-            flagsText += "X"
-
-        print(flagsText)
 
         # The LSB signifies whether a segment is executable or not
         if segmentFlags & 1 == 1:
