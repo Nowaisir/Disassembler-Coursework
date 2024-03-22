@@ -27,7 +27,7 @@ def findInstructionsRange(fileBytes):
     instructions_segment = None
 
     for header in range(
-        SEGMENT_HEADER_TABLE, numSegments * SEGMENT_HEADER_SIZE, SEGMENT_HEADER_SIZE
+        SEGMENT_HEADER_TABLE, SEGMENT_HEADER_TABLE + numSegments * SEGMENT_HEADER_SIZE, SEGMENT_HEADER_SIZE
     ):
 
         print(header)
