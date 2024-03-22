@@ -1,7 +1,11 @@
 all: tests/exit
 
-GCC := riscv64-unknown-linux-gnu-gcc
-GNU_AS := riscv64-unknown-linux-gnu-as
+# on one of my systems, riscv64-linux-gnu-as is installed
+# and on the other, riscv64-unknown-linux-gnu-as
+TOOLCHAIN_PREFIX = $(if test -f /bin/riscv64-linux-gnu-*, /bin/riscv64-linux-gnu-, /bin/riscv64-unknown-linux-gnu-)
+
+GCC := $(TOOLCHAIN_PREFIX)gcc
+GNU_AS := $(TOOLCHAIN_PREFIX)as
 
 tests/exit:  tests/artifacts/ tests/exit.asm
 	$(GNU_AS) tests/exit.asm -o tests/artifacts/exit.o
