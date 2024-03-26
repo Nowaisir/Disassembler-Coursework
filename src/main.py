@@ -23,7 +23,7 @@ def findInstructionsRange(fileBytes):
 
     numSegments = int.from_bytes(fileBytes[0x38:0x3A], "little")
 
-    instructions_segment = None
+    instructionsSegment = None
 
     for header in range(
         SEGMENT_HEADER_TABLE, SEGMENT_HEADER_TABLE + numSegments * SEGMENT_HEADER_SIZE, SEGMENT_HEADER_SIZE
@@ -34,9 +34,9 @@ def findInstructionsRange(fileBytes):
         if segmentFlags & 1 == 1:
             # our heuristic is that the first segment whose memory is executable
             # is the one which all instructions are under
-            instructions_segment = 1337
+            instructionsSegment = 1337
 
-    if instructions_segment == None:
+    if instructionsSegment == None:
         raise ExecutableSegmentNotFound
 
     return range(0)  # TODO: complete this
