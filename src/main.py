@@ -22,7 +22,6 @@ def findInstructionsRange(fileBytes):
     SEGMENT_HEADER_SIZE = 0x38
 
     numSegments = int.from_bytes(fileBytes[0x38:0x3A], "little")
-
     instructionsSegment = None
 
     for header in range(
@@ -34,12 +33,27 @@ def findInstructionsRange(fileBytes):
         if segmentFlags & 1 == 1:
             # our heuristic is that the first segment whose memory is executable
             # is the one which all instructions are under
-            instructionsSegment = 1337
+            instructionsSegment = dict(
+                offset = int.from_bytes(fileBytes[header + 8:header + 0x10], "little"),
+                virtAddr = int.from_bytes(fileBytes[header + 0x10:header + 0x18], "little"),
+                size = int.from_bytes(fileBytes[header + 0x20: header + 28], "little")
+            )
+
 
     if instructionsSegment == None:
         raise ExecutableSegmentNotFound
 
-    return range(0)  # TODO: complete this
+
+    # we need the entry point offset in the file but the ELF file only
+    # explicitly stores its virtual address. We do however have all the
+    # properties of the segment it probably lies in
+    entryPointVirtualAddress = int.from_bytes(fileBytes[0x18: 0x20], "little")
+    toEntryPoint = entryPointVirtualAddress - instructionsSegment["virtAddr"]
+
+    entryPoint = instructionsSegment["offset"] + toEntryPoint
+
+    # each instruction is 4 bytes long, hence the 4
+    return range(entryPoint, instructionsSegment["offset"] + instructionsSegment["size"], 4)
 
 
 def chooseFile():
@@ -78,7 +92,8 @@ Your architecture ({hex(architecture)}) isn't supported",
         return
 
     try:
-        findInstructionsRange(fileBytes)
+        for address in findInstructionsRange(fileBytes):
+            print(hex(address))
     except ExecutableSegmentNotFound:
         QMessageBox.warning(
             window,
