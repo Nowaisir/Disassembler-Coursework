@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import (
     QApplication,
+    QSizePolicy,
+    QStackedLayout,
     QWidget,
     QPushButton,
     QFileDialog,
@@ -37,7 +39,7 @@ def findInstructionsRange(fileBytes):
     if instructions_segment == None:
         raise ExecutableSegmentNotFound
 
-    return range()  # TODO: complete this
+    return range(0)  # TODO: complete this
 
 
 def chooseFile():
@@ -49,7 +51,7 @@ def chooseFile():
 
     fileBytes = open(filePath, "rb").read()
 
-    # all ELF files start with the bytes 7f 45 4c 46
+    # all ELF files Start with the bytes 7f 45 4c 46
     if fileBytes[0:4] != b"\x7fELF":
         QMessageBox.warning(
             window, "Disassembler", "Oops! You didn't select an ELF executable"
@@ -86,20 +88,33 @@ Your architecture ({hex(architecture)}) isn't supported",
 
         return
 
+    # Passed all checks after this point
+    primaryLayout.setCurrentIndex(1) # switch to the disassembly view
 
 app = QApplication()
 window = QWidget()  # widgets with no parents specified create their own window
 window.setWindowTitle("Disassembler")
 window.show()
 
-layout = QVBoxLayout()
-window.setLayout(layout)
+primaryLayout = QStackedLayout() # allows us to switch between the start screen and disassembly view
+window.setLayout(primaryLayout)
+
+startScreen = QWidget()
+startScreen.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+primaryLayout.addWidget(startScreen)
+
+disassemblyScreen = QWidget()
+disassemblyScreen.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+primaryLayout.addWidget(disassemblyScreen) # order of adding must correspond to the .setCurrentIndexCall()
+
+startLayout = QVBoxLayout()
+startScreen.setLayout(startLayout)
 
 openFileButton = QPushButton(clicked=chooseFile)
 openFileButton.setText("Open a RISC-V file")
 openFileButton.setFixedSize(140, 40)
 openFileButton.show()
 
-layout.addWidget(openFileButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+startLayout.addWidget(openFileButton, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
 
 app.exec()
