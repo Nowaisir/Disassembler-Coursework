@@ -36,7 +36,7 @@ def findInstructionsRange(fileBytes):
             instructionsSegment = dict(
                 offset = int.from_bytes(fileBytes[header + 8:header + 0x10], "little"),
                 virtAddr = int.from_bytes(fileBytes[header + 0x10:header + 0x18], "little"),
-                size = int.from_bytes(fileBytes[header + 0x20: header + 28], "little")
+                size = int.from_bytes(fileBytes[header + 0x20: header + 0x28], "little")
             )
 
 
@@ -92,6 +92,7 @@ Your architecture ({hex(architecture)}) isn't supported",
         return
 
     try:
+        print(findInstructionsRange(fileBytes))
         for address in findInstructionsRange(fileBytes):
             print(hex(address))
     except ExecutableSegmentNotFound:
