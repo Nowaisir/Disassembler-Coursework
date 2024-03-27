@@ -1,16 +1,17 @@
 from PySide6.QtWidgets import (
     QApplication,
+    QHBoxLayout,
     QSizePolicy,
     QStackedLayout,
     QWidget,
     QPushButton,
     QFileDialog,
+    QLabel,
     QVBoxLayout,
     QMessageBox,
 )
 
-import PySide6.QtCore as QtCore
-
+from PySide6 import QtCore
 
 class ExecutableSegmentNotFound(Exception):
     pass
@@ -55,6 +56,16 @@ def findInstructionsRange(fileBytes):
     # each instruction is 4 bytes long, hence the 4
     return range(entryPoint, instructionsSegment["offset"] + instructionsSegment["size"], 4)
 
+def formattedAddressNumbers(fileBytes):
+    # e.g a range() of [1024, 1028, 1032, 1036] into
+    # 0x400, 0x404, 0x408 0x40C
+    raw = (hex(addr).title() for addr in findInstructionsRange(fileBytes))
+    pruned = (addr[2:] for addr in raw) # 0xF04c -> F04C
+
+    # e.g 0000 0400, 000F 30FC, etc.
+    beautified = (addr.zfill(8)[0:4] + " " + addr.zfill(8)[4:8] for addr in pruned)
+
+    return "\n".join(beautified) # as this is used in a QLabel
 
 def chooseFile():
     filePath = QFileDialog.getOpenFileName()[0]
@@ -91,10 +102,8 @@ Your architecture ({hex(architecture)}) isn't supported",
 
         return
 
-    try:
-        print(findInstructionsRange(fileBytes))
-        for address in findInstructionsRange(fileBytes):
-            print(hex(address))
+    try: # subsequent calls to findInstructionsRange() are safe
+        findInstructionsRange(fileBytes)
     except ExecutableSegmentNotFound:
         QMessageBox.warning(
             window,
@@ -106,6 +115,8 @@ Your architecture ({hex(architecture)}) isn't supported",
 
     # Passed all checks after this point
     primaryLayout.setCurrentIndex(1) # switch to the disassembly view
+    addressNumbers.setText(formattedAddressNumbers(fileBytes))
+    addressNumbers.setFixedHeight(addressNumbers.sizeHint().height())
 
 app = QApplication()
 window = QWidget()  # widgets with no parents specified create their own window
@@ -122,6 +133,15 @@ primaryLayout.addWidget(startScreen)
 disassemblyScreen = QWidget()
 disassemblyScreen.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 primaryLayout.addWidget(disassemblyScreen) # order of adding must correspond to the .setCurrentIndexCall()
+
+disassemblyScreenLayout = QHBoxLayout()
+disassemblyScreenLayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
+
+addressNumbers = QLabel(disassemblyScreen)
+addressNumbers.setFixedWidth(100)
+addressNumbers.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+addressNumbers.show()
+disassemblyScreenLayout.addWidget(addressNumbers)
 
 startLayout = QVBoxLayout()
 startScreen.setLayout(startLayout)
