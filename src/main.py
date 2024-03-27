@@ -141,11 +141,12 @@ primaryLayout.addWidget(disassemblyScreen) # order of adding must correspond to 
 
 disassemblyScreenLayout = QHBoxLayout()
 disassemblyScreenLayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
+disassemblyScreenLayout.setContentsMargins(15, 10, 0, 0)
+disassemblyScreen.setLayout(disassemblyScreenLayout)
 
-addressNumbers = QLabel(disassemblyScreen)
+addressNumbers = QLabel()
 addressNumbers.setFixedWidth(100)
 addressNumbers.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-addressNumbers.show()
 disassemblyScreenLayout.addWidget(addressNumbers)
 
 startLayout = QVBoxLayout()
