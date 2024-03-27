@@ -57,9 +57,14 @@ def findInstructionsRange(fileBytes):
     return range(entryPoint, instructionsSegment["offset"] + instructionsSegment["size"], 4)
 
 def formattedAddressNumbers(fileBytes):
+    entryPointVirtAddr = int.from_bytes(fileBytes[0x18: 0x20], "little")
+    numInstructions = len(findInstructionsRange(fileBytes))
+
+    addresses = (entryPointVirtAddr + 4 * i for i in range(numInstructions))
+
     # e.g a range() of [1024, 1028, 1032, 1036] into
     # 0x400, 0x404, 0x408 0x40C
-    raw = (hex(addr).title() for addr in findInstructionsRange(fileBytes))
+    raw = (hex(addr).title() for addr in addresses)
     pruned = (addr[2:] for addr in raw) # 0xF04c -> F04C
 
     # e.g 0000 0400, 000F 30FC, etc.
