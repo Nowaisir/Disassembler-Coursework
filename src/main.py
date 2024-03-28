@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from PySide6 import QtCore
+from PySide6.QtGui import QFont
 
 class ExecutableSegmentNotFound(Exception):
     pass
@@ -121,7 +122,11 @@ Your architecture ({hex(architecture)}) isn't supported",
     # Passed all checks after this point
     primaryLayout.setCurrentIndex(1) # switch to the disassembly view
     addressNumbers.setText(formattedAddressNumbers(fileBytes))
-    addressNumbers.setFixedHeight(addressNumbers.sizeHint().height())
+    addressNumbers.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
+    assemblyColumn.setText("<unknown instruction>\n"*len(findInstructionsRange(fileBytes)))
+    assemblyColumn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
 
 app = QApplication()
 window = QWidget()  # widgets with no parents specified create their own window
@@ -147,7 +152,14 @@ disassemblyScreen.setLayout(disassemblyScreenLayout)
 addressNumbers = QLabel()
 addressNumbers.setFixedWidth(100)
 addressNumbers.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+addressNumbers.setFont(QFont("Courier New", 12))
 disassemblyScreenLayout.addWidget(addressNumbers)
+
+# same size and properties of the addressNumbers above
+assemblyColumn = QLabel()
+assemblyColumn.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+assemblyColumn.setFont(QFont("Courier New", 12))
+disassemblyScreenLayout.addWidget(assemblyColumn)
 
 startLayout = QVBoxLayout()
 startScreen.setLayout(startLayout)
