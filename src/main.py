@@ -17,6 +17,25 @@ from PySide6.QtGui import QFont
 class ExecutableSegmentNotFound(Exception):
     pass
 
+class Instruction:
+    opcode = None # None i.e no instruction
+    operands = []
+
+    def asRichText(self):
+        colors = {
+            "UNKNOWN": "#A48A85",
+            "OTHER": "#464646", # the opcode, punctuation, etc.
+            "REGISTER": "#295F21"
+        }
+
+        for hexColorCode in colors.values():
+            assert(hexColorCode[0] == "#") # might make this mistake
+
+        if self.opcode == None:
+            return f"<font color={colors['UNKNOWN']}>Unknown Instruction</font>"
+        else:
+            return "Unimplemented"
+
 
 def findInstructionsRange(fileBytes):
     # Use segment header table to locate executable segment
@@ -73,6 +92,23 @@ def formattedAddressNumbers(fileBytes):
 
     return "\n".join(beautified) # as this is used in a QLabel
 
+def decodeInstructions(fileBytes):
+    instructions = []
+    # the decoding loop
+    for _ in findInstructionsRange(fileBytes):
+        instructions.append(Instruction())
+
+    # e.g if there are 2 instructions: add a0, x0, 13 and ecall
+    # this text should be like
+    # ...\n
+    # <font color="#001F00"> ecall</font>
+    markup = "\n".join(instr.asRichText() for instr in instructions)
+
+    for instr in instructions:
+        print(instr.asRichText())
+    
+    return markup
+
 def chooseFile():
     filePath = QFileDialog.getOpenFileName()[0]
 
@@ -124,7 +160,7 @@ Your architecture ({hex(architecture)}) isn't supported",
     addressNumbers.setText(formattedAddressNumbers(fileBytes))
     addressNumbers.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
-    assemblyColumn.setText("<unknown instruction>\n"*len(findInstructionsRange(fileBytes)))
+    assemblyColumn.setText(decodeInstructions(fileBytes))
     assemblyColumn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
 
