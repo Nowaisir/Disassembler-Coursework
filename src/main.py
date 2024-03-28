@@ -102,10 +102,9 @@ def decodeInstructions(fileBytes):
     # this text should be like
     # ...\n
     # <font color="#001F00"> ecall</font>
-    markup = "\n".join(instr.asRichText() for instr in instructions)
+    markup = "<br>".join(instr.asRichText() for instr in instructions)
 
-    for instr in instructions:
-        print(instr.asRichText())
+    print(repr(markup))
     
     return markup
 
