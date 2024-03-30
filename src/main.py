@@ -18,8 +18,10 @@ class ExecutableSegmentNotFound(Exception):
     pass
 
 class Instruction:
-    opcode = None # None i.e no instruction
     operands = []
+
+    def __init__(self, opcode=None):
+        self.opcode = opcode
 
     def asRichText(self):
         colors = {
@@ -34,8 +36,10 @@ class Instruction:
         if self.opcode == None:
             return f"<font color={colors['UNKNOWN']}>Unknown Instruction</font>"
         else:
-            return "Unimplemented"
+            return self.opcode
 
+print(Instruction("ecall").asRichText())
+print(Instruction("efence").asRichText())
 
 def findInstructionsRange(fileBytes):
     # Use segment header table to locate executable segment
