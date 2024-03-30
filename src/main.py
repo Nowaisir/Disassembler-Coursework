@@ -214,7 +214,7 @@ disassemblyScreen.setLayout(disassemblyScreenLayout)
 addressNumbers = QLabel()
 addressNumbers.setFixedWidth(100)
 addressNumbers.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-addressNumbers.setFont(QFont("Courier New", 12))
+addressNumbers.setFont(QFont("Courier New", 10))
 disassemblyScreenLayout.addWidget(addressNumbers)
 
 # same size and properties of the addressNumbers above
@@ -222,7 +222,7 @@ assemblyColumn = QLabel()
 assemblyColumn.setAlignment(
     QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
 )
-assemblyColumn.setFont(QFont("Courier New", 12))
+assemblyColumn.setFont(QFont("Courier New", 10))
 disassemblyScreenLayout.addWidget(assemblyColumn)
 
 startLayout = QVBoxLayout()
