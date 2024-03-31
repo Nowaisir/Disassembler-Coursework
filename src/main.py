@@ -19,11 +19,15 @@ class ExecutableSegmentNotFound(Exception):
     pass
 
 
-class Instruction:
-    operands = []
+class Register:
+    def __init__(self, code):
+        self.code = code  # each register in RISC-V is identified a number between 0-31
 
-    def __init__(self, opcode=None):
+
+class Instruction:
+    def __init__(self, opcode=None, operands=[]):
         self.opcode = opcode
+        self.operands = operands
 
     def asRichText(self):
         colors = {
@@ -38,11 +42,38 @@ class Instruction:
         if self.opcode == None:
             return f"<font color={colors['UNKNOWN']}>Unknown Instruction</font>"
         else:
-            return self.opcode
+            instructionMarkup = self.opcode
+
+            for i, operand in enumerate(self.operands):
+                if i == 0:
+                    preceding = " "
+                else:
+                    preceding = ", "
+
+                if isinstance(operand, Register):
+                    # in RISC-V, one way to write registers down is by writing them like:
+                    # x0 for the hardwired to zero register, x1 for the return address register, etc.
+                    xNotation = "x" + str(operand.code)
+                    operandMarkup = (
+                        f"<font color={colors['REGISTER']}>{xNotation}</font>"
+                    )
+                else:
+                    raise NotImplementedError(
+                        "Unsupported object inserted into the operands field"
+                    )
+
+                instructionMarkup += preceding + operandMarkup
+
+            return instructionMarkup
 
 
+print("Operandless instructions:")
 print(Instruction("ecall").asRichText())
 print(Instruction("efence").asRichText())
+
+print("Register only testing:")
+print(Instruction("sb", [Register(10)]).asRichText())
+print(Instruction("add", [Register(5), Register(5), Register(6)]).asRichText())
 
 
 def findInstructionsRange(fileBytes):
