@@ -14,6 +14,20 @@ from PySide6.QtWidgets import (
 from PySide6 import QtCore
 from PySide6.QtGui import QFont
 
+# maps numerical register codes to their more programmer friendly aliases
+# fmt: off
+REGISTER_ALIAS_TABLE = [
+    "x0", "ra", "sp", "gp", "tp",
+    "t0", "t1", "t2", "fp", "s1",
+    "a0", "a1", "a2", "a3", "a4",
+    "a5", "a6", "a7", "s2", "s3",
+    "s4", "s5", "s6", "s7", "s8",
+    "s9", "s10", "s11", "t3", "t4",
+    "t5", "t6",
+]
+
+# fmt: on
+
 
 class ExecutableSegmentNotFound(Exception):
     pass
@@ -51,12 +65,10 @@ class Instruction:
                     preceding = ", "
 
                 if isinstance(operand, Register):
-                    # in RISC-V, one way to write registers down is by writing them like:
-                    # x0 for the hardwired to zero register, x1 for the return address register, etc.
-                    xNotation = "x" + str(operand.code)
-                    operandMarkup = (
-                        f"<font color={colors['REGISTER']}>{xNotation}</font>"
-                    )
+                    # e.g 7 -> t2 (temporary register 3)
+                    alias = REGISTER_ALIAS_TABLE[operand.code]
+
+                    operandMarkup = f"<font color={colors['REGISTER']}>{alias}</font>"
                 else:
                     raise NotImplementedError(
                         "Unsupported object inserted into the operands field"
@@ -73,7 +85,7 @@ print(Instruction("efence").asRichText())
 
 print("Register only testing:")
 print(Instruction("sb", [Register(10)]).asRichText())
-print(Instruction("add", [Register(5), Register(5), Register(6)]).asRichText())
+print(Instruction("add", [Register(10), Register(0), Register(5)]).asRichText())
 
 
 def findInstructionsRange(fileBytes):
