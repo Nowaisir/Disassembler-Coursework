@@ -37,6 +37,22 @@ class Register:
     def __init__(self, code):
         self.code = code  # each register in RISC-V is identified a number between 0-31
 
+    def alias(self):
+        # fmt: off
+        REGISTER_ALIAS_TABLE = [
+            "x0", "ra", "sp", "gp", "tp",
+            "t0", "t1", "t2", "fp", "s1",
+            "a0", "a1", "a2", "a3", "a4",
+            "a5", "a6", "a7", "s2", "s3",
+            "s4", "s5", "s6", "s7", "s8",
+            "s9", "s10", "s11", "t3", "t4",
+            "t5", "t6",
+        ]
+
+        # fmt: on
+
+        return REGISTER_ALIAS_TABLE[self.code]
+
 
 class Instruction:
     def __init__(self, opcode=None, operands=[]):
@@ -65,10 +81,9 @@ class Instruction:
                     preceding = ", "
 
                 if isinstance(operand, Register):
-                    # e.g 7 -> t2 (temporary register 3)
-                    alias = REGISTER_ALIAS_TABLE[operand.code]
-
-                    operandMarkup = f"<font color={colors['REGISTER']}>{alias}</font>"
+                    operandMarkup = (
+                        f"<font color={colors['REGISTER']}>{operand.alias()}</font>"
+                    )
                 else:
                     raise NotImplementedError(
                         "Unsupported object inserted into the operands field"
