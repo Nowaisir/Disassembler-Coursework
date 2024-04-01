@@ -55,9 +55,9 @@ class Register:
 
 
 class Instruction:
-    def __init__(self, opcode=None, operands=[]):
+    def __init__(self, opcode=None, *operands):
         self.opcode = opcode
-        self.operands = operands
+        self.operands = list(operands)
 
     def asRichText(self):
         colors = {
@@ -99,8 +99,8 @@ print(Instruction("ecall").asRichText())
 print(Instruction("efence").asRichText())
 
 print("Register only testing:")
-print(Instruction("sb", [Register(10)]).asRichText())
-print(Instruction("add", [Register(10), Register(0), Register(5)]).asRichText())
+print(Instruction("sb", Register(10)).asRichText())
+print(Instruction("add", Register(10), Register(0), Register(5)).asRichText())
 
 
 def findInstructionsRange(fileBytes):
