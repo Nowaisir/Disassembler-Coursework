@@ -54,6 +54,30 @@ class Register:
         return REGISTER_ALIAS_TABLE[self.code]
 
 
+class Immediate:
+    def __init__(self, bits):
+        self.bits = bits
+
+    # converts the immediate value's bits to its textual representation
+    # thats suited for assembly programmers
+    def parse(self):
+        raise NotImplementedError(f"{self.__class__} implements no parse function")
+
+
+class Int12(Immediate):
+    def parse(self):
+        signBit = self.bits >> 11 & 1
+        if signBit == 0:
+            return hex(self.bits)
+        else:  # the & 0xFFF discards all the twos complementing done past the 12 bits we want
+            magnitude = -self.bits & 0xFFF
+            return "-" + hex(magnitude)
+
+
+class Mask12(Immediate):
+    pass
+
+
 class Instruction:
     def __init__(self, opcode=None, *operands):
         self.opcode = opcode
@@ -62,8 +86,8 @@ class Instruction:
     def asRichText(self):
         colors = {
             "UNKNOWN": "#A48A85",
-            "OTHER": "#464646",  # the opcode, punctuation, etc.
-            "REGISTER": "#295F21",
+            "CONSTANT": "#295F21",  # e.g 0x23
+            "REGISTER": "#295F21",  # e.g sp, a0
         }
 
         for hexColorCode in colors.values():
@@ -84,6 +108,10 @@ class Instruction:
                     operandMarkup = (
                         f"<font color={colors['REGISTER']}>{operand.alias()}</font>"
                     )
+                elif isinstance(operand, Immediate):
+                    operandMarkup = (
+                        f"<font color={colors['CONSTANT']}>{operand.parse()}</font>"
+                    )
                 else:
                     raise NotImplementedError(
                         "Unsupported object inserted into the operands field"
@@ -101,6 +129,10 @@ print(Instruction("efence").asRichText())
 print("Register only testing:")
 print(Instruction("sb", Register(10)).asRichText())
 print(Instruction("add", Register(10), Register(0), Register(5)).asRichText())
+
+print("Immediate integer testing")
+print(Instruction("addi", Register(10), Register(0), Int12(100)).asRichText())
+print(Instruction("addi", Register(10), Register(0), Int12(0xFFB)).asRichText())
 
 
 def findInstructionsRange(fileBytes):
