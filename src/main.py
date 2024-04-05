@@ -75,7 +75,15 @@ class Int12(Immediate):
 
 
 class Mask12(Immediate):
-    pass
+    def parse(self):
+        # the bit that controls all the  bits more significant than bit 11 in a register
+        signBit = self.bits >> 11 & 1
+
+        # the 12 bits in self.bits have no reduced degrees of freedom however
+        if signBit:
+            return "0xff..f" + hex(self.bits)[2:]
+        else:
+            return hex(self.bits)
 
 
 class Instruction:
@@ -133,6 +141,11 @@ print(Instruction("add", Register(10), Register(0), Register(5)).asRichText())
 print("Immediate integer testing")
 print(Instruction("addi", Register(10), Register(0), Int12(100)).asRichText())
 print(Instruction("addi", Register(10), Register(0), Int12(0xFFB)).asRichText())
+
+print("Immediate mask testing")
+print(Instruction("xori", Register(5), Register(5), Mask12(0x10)).asRichText())
+print(Instruction("xori", Register(5), Register(5), Mask12(0x800)).asRichText())
+print(Instruction("xori", Register(5), Register(5), Mask12(0xFFF)).asRichText())
 
 
 def findInstructionsRange(fileBytes):
