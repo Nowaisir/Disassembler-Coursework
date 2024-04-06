@@ -86,6 +86,12 @@ class Mask12(Immediate):
             return hex(self.bits)
 
 
+class BasedDisplacedAddress:
+    def __init__(self, displacement: Int12, base: Register):
+        self.displacement = displacement
+        self.base = base
+
+
 class Instruction:
     def __init__(self, opcode=None, *operands):
         self.opcode = opcode
@@ -120,6 +126,17 @@ class Instruction:
                     operandMarkup = (
                         f"<font color={colors['CONSTANT']}>{operand.parse()}</font>"
                     )
+
+                elif isinstance(operand, BasedDisplacedAddress):
+                    operandMarkup = f"""\
+<font color={colors['CONSTANT']}>\
+{operand.displacement.parse()}\
+</font>\
+\
+(<font color={colors['REGISTER']}>\
+{operand.base.alias()}\
+</font>)\
+"""
                 else:
                     raise NotImplementedError(
                         "Unsupported object inserted into the operands field"
@@ -146,6 +163,13 @@ print("Immediate mask testing")
 print(Instruction("xori", Register(5), Register(5), Mask12(0x10)).asRichText())
 print(Instruction("xori", Register(5), Register(5), Mask12(0x800)).asRichText())
 print(Instruction("xori", Register(5), Register(5), Mask12(0xFFF)).asRichText())
+
+print("Based displaced addressing:")
+print(
+    Instruction(
+        "sw", Register(10), BasedDisplacedAddress(Int12(8), Register(2))
+    ).asRichText()
+)
 
 
 def findInstructionsRange(fileBytes):
