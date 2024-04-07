@@ -236,8 +236,14 @@ def formattedAddressNumbers(fileBytes):
 def decodeInstructions(fileBytes):
     instructions = []
     # the decoding loop
-    for _ in findInstructionsRange(fileBytes):
-        instructions.append(Instruction())
+    for offset in findInstructionsRange(fileBytes):
+        # each machine instruction is 4 bytes long
+        machine = int.from_bytes(fileBytes[offset : offset + 4], "little")
+
+        if machine == 0x73:
+            instructions.append(Instruction("ecall"))
+        else:
+            instructions.append(Instruction())
 
     # e.g if there are 2 instructions: add a0, x0, 13 and ecall
     # this text should be like
