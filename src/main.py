@@ -241,12 +241,9 @@ def decodeInstructions(fileBytes):
 
     # e.g if there are 2 instructions: add a0, x0, 13 and ecall
     # this text should be like
-    # ...\n
+    # ...<br>
     # <font color="#001F00"> ecall</font>
     markup = "<br>".join(instr.asRichText() for instr in instructions)
-
-    print(repr(markup))
-
     return markup
 
 
