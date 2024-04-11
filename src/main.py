@@ -101,7 +101,7 @@ class Instruction:
         colors = {
             "UNKNOWN": "#A48A85",
             "CONSTANT": "#295F21",  # e.g 0x23
-            "REGISTER": "#295F21",  # e.g sp, a0
+            "REGISTER": "#00474B",  # e.g sp, a0
         }
 
         for hexColorCode in colors.values():
@@ -370,7 +370,8 @@ disassemblyScreen.setLayout(disassemblyScreenLayout)
 addressNumbers = QLabel()
 addressNumbers.setFixedWidth(100)
 addressNumbers.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-addressNumbers.setFont(QFont("Courier New", 10))
+addressNumbers.setFont(QFont("Consolas", 10, QFont.Weight.Medium))
+addressNumbers.setStyleSheet("color: #102F0B")
 disassemblyScreenLayout.addWidget(addressNumbers)
 
 # same size and properties of the addressNumbers above
@@ -378,7 +379,7 @@ assemblyColumn = QLabel()
 assemblyColumn.setAlignment(
     QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter
 )
-assemblyColumn.setFont(QFont("Courier New", 10))
+assemblyColumn.setFont(QFont("Consolas", 10))
 disassemblyScreenLayout.addWidget(assemblyColumn)
 
 startLayout = QVBoxLayout()
