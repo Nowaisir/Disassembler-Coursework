@@ -2,7 +2,9 @@ all: tests/exit
 
 # on one of my systems, riscv64-linux-gnu-as is installed
 # and on the other, riscv64-unknown-linux-gnu-as
-TOOLCHAIN_PREFIX = $(if test -f /bin/riscv64-linux-gnu-*, /bin/riscv64-linux-gnu-, /bin/riscv64-unknown-linux-gnu-)
+TOOLCHAIN_PREFIX := $(if $(wildcard /bin/riscv64-linux-gnu*), \
+	/bin/riscv64-linux-gnu, \
+	/opt/riscv/bin/riscv64-unknown-linux-gnu-)
 
 GCC := $(TOOLCHAIN_PREFIX)gcc
 GNU_AS := $(TOOLCHAIN_PREFIX)as
