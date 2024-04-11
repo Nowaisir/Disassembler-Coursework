@@ -240,8 +240,34 @@ def decodeInstructions(fileBytes):
         # each machine instruction is 4 bytes long
         machine = int.from_bytes(fileBytes[offset : offset + 4], "little")
 
+        # ids the class of instructions an instruction may fall in, e.g:
+        # - ALU instruction /w immediate summand (addi, xori, etc.)
+        # - ALU instructions /w register summands only (add, xor, etc.)
+        # - store instructions (sb, sw, etc.)
+        opclass = machine & 0x7F
+
+        # the register to be written to
+        destinationCode = machine >> 7 & 0x1F
+
+        # complementary opcode discriminator field
+        opd3 = machine >> 12 & 7
+
+        # register operands
+        source1Code = machine >> 15 & 0x1F
+
         if machine == 0x73:
             instructions.append(Instruction("ecall"))
+        elif opclass == 0x13 and opd3 == 0:
+            # the 2nd value to add is stored directly in the machine code
+            immediate = machine >> 20
+            instructions.append(
+                Instruction(
+                    "addi",
+                    Register(destinationCode),
+                    Register(source1Code),
+                    Int12(immediate),
+                )
+            )
         else:
             instructions.append(Instruction())
 
