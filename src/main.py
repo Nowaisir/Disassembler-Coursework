@@ -256,14 +256,21 @@ def decodeInstructions(fileBytes):
         source1Code = machine >> 15 & 0x1F
         source2Code = machine >> 20 & 0x1F
 
+        # depending on the instruction, its a bits mask or a 12 bit value to add
+        immediateBits = machine >> 20
+
         params = Instruction()
 
         if machine == 0x73:
             params = Instruction("ecall")
-        elif opclass == 0x13:
-            # depending on the instruction, its a bits mask or a 12 bit value to add
-            immediateBits = machine >> 20
 
+        elif opclass == 0x03 and opd3 == 0:
+            params = Instruction(
+                "lb",
+                Register(destinationCode),
+                BasedDisplacedAddress(Int12(immediateBits), Register(source1Code)),
+            )
+        elif opclass == 0x13:
             if opd3 == 0:
                 params = Instruction(
                     "addi",
