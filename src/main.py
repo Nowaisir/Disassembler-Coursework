@@ -270,6 +270,13 @@ def decodeInstructions(fileBytes):
                     Register(source1Code),
                     Int12(immediateBits),
                 )
+            elif opd3 == 4:
+                params = Instruction(
+                    "xori",
+                    Register(destinationCode),
+                    Register(source1Code),
+                    Mask12(immediateBits),
+                )
             elif opd3 == 7:
                 params = Instruction(
                     "andi",
