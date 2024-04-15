@@ -255,32 +255,30 @@ def decodeInstructions(fileBytes):
         # register operands
         source1Code = machine >> 15 & 0x1F
 
+        params = Instruction()
+
         if machine == 0x73:
-            instructions.append(Instruction("ecall"))
+            params = Instruction("ecall")
         elif opclass == 0x13:
             # depending on the instruction, its a bits mask or a 12 bit value to add
             immediateBits = machine >> 20
 
             if opd3 == 0:
-                instructions.append(
-                    Instruction(
-                        "addi",
-                        Register(destinationCode),
-                        Register(source1Code),
-                        Int12(immediateBits),
-                    )
+                params = Instruction(
+                    "addi",
+                    Register(destinationCode),
+                    Register(source1Code),
+                    Int12(immediateBits),
                 )
             elif opd3 == 7:
-                instructions.append(
-                    Instruction(
-                        "andi",
-                        Register(destinationCode),
-                        Register(source1Code),
-                        Mask12(immediateBits),
-                    )
+                params = Instruction(
+                    "andi",
+                    Register(destinationCode),
+                    Register(source1Code),
+                    Mask12(immediateBits),
                 )
-        else:
-            instructions.append(Instruction())
+
+        instructions.append(params)
 
     # e.g if there are 2 instructions: add a0, x0, 13 and ecall
     # this text should be like
