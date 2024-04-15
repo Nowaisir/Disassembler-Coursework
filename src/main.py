@@ -257,17 +257,28 @@ def decodeInstructions(fileBytes):
 
         if machine == 0x73:
             instructions.append(Instruction("ecall"))
-        elif opclass == 0x13 and opd3 == 0:
-            # the 2nd value to add is stored directly in the machine code
-            immediate = machine >> 20
-            instructions.append(
-                Instruction(
-                    "addi",
-                    Register(destinationCode),
-                    Register(source1Code),
-                    Int12(immediate),
+        elif opclass == 0x13:
+            # depending on the instruction, its a bits mask or a 12 bit value to add
+            immediateBits = machine >> 20
+
+            if opd3 == 0:
+                instructions.append(
+                    Instruction(
+                        "addi",
+                        Register(destinationCode),
+                        Register(source1Code),
+                        Int12(immediateBits),
+                    )
                 )
-            )
+            elif opd3 == 7:
+                instructions.append(
+                    Instruction(
+                        "andi",
+                        Register(destinationCode),
+                        Register(source1Code),
+                        Mask12(immediateBits),
+                    )
+                )
         else:
             instructions.append(Instruction())
 
