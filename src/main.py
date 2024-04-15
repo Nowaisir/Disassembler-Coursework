@@ -254,6 +254,7 @@ def decodeInstructions(fileBytes):
 
         # register operands
         source1Code = machine >> 15 & 0x1F
+        source2Code = machine >> 20 & 0x1F
 
         params = Instruction()
 
@@ -284,6 +285,13 @@ def decodeInstructions(fileBytes):
                     Register(source1Code),
                     Mask12(immediateBits),
                 )
+        elif opclass == 0x33 and opd3 == 0:
+            params = Instruction(
+                "add",
+                Register(destinationCode),
+                Register(source1Code),
+                Register(source2Code),
+            )
 
         instructions.append(params)
 
