@@ -147,31 +147,6 @@ class Instruction:
             return instructionMarkup
 
 
-print("Operandless instructions:")
-print(Instruction("ecall").asRichText())
-print(Instruction("efence").asRichText())
-
-print("Register only testing:")
-print(Instruction("sb", Register(10)).asRichText())
-print(Instruction("add", Register(10), Register(0), Register(5)).asRichText())
-
-print("Immediate integer testing")
-print(Instruction("addi", Register(10), Register(0), Int12(100)).asRichText())
-print(Instruction("addi", Register(10), Register(0), Int12(0xFFB)).asRichText())
-
-print("Immediate mask testing")
-print(Instruction("xori", Register(5), Register(5), Mask12(0x10)).asRichText())
-print(Instruction("xori", Register(5), Register(5), Mask12(0x800)).asRichText())
-print(Instruction("xori", Register(5), Register(5), Mask12(0xFFF)).asRichText())
-
-print("Based displaced addressing:")
-print(
-    Instruction(
-        "sw", Register(10), BasedDisplacedAddress(Int12(8), Register(2))
-    ).asRichText()
-)
-
-
 def findInstructionsRange(fileBytes):
     # Use segment header table to locate executable segment
     SEGMENT_HEADER_TABLE = 0x40
